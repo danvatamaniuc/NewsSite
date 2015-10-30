@@ -44,7 +44,7 @@ public class ManagerTest extends TestCase {
 
         super.setUp();
     }
-/
+
     public void testSaveNews() throws Exception {
         manager.save(news);
         ArrayList<News> allNews = (ArrayList) newsRepo.getAll();

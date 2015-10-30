@@ -1,7 +1,7 @@
 package main.domain;
 
 import main.data.domain.Validator;
-import main.exceptions.ValidationException;
+import main.data.exceptions.ValidationException;
 import main.utils.StringUtils;
 
 /**

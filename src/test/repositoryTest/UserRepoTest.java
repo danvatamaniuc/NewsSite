@@ -1,10 +1,9 @@
 package test.repositoryTest;
 
 import junit.framework.TestCase;
-import main.domain.News;
 import main.domain.User;
 import main.domain.UserValidator;
-import main.exceptions.ValidationException;
+import main.data.exceptions.ValidationException;
 import main.repository.UserRepo;
 
 import java.util.ArrayList;

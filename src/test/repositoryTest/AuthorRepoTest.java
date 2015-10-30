@@ -3,7 +3,6 @@ package test.repositoryTest;
 import junit.framework.TestCase;
 import main.domain.Author;
 import main.domain.AuthorValidator;
-import main.exceptions.ValidationException;
 import main.repository.AuthorRepo;
 
 import java.util.ArrayList;
@@ -41,6 +40,8 @@ public class AuthorRepoTest extends TestCase {
         catch (Exception e){
             assertEquals(true, true);
         }
+
+//        repo.saveAllToXml();
 
         assertNotNull(allAuthors.get(0));
 //        assertEquals(allAuthors.get(0).getAge(), author.getAge());

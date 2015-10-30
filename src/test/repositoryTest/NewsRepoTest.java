@@ -3,11 +3,9 @@ package test.repositoryTest;
 import junit.framework.TestCase;
 import main.domain.News;
 import main.domain.NewsValidator;
-import main.exceptions.ValidationException;
 import main.repository.NewsRepo;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by 1 on 10/9/2015.

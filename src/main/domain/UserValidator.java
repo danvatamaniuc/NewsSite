@@ -1,7 +1,7 @@
 package main.domain;
 
 import main.data.domain.Validator;
-import main.exceptions.ValidationException;
+import main.data.exceptions.ValidationException;
 
 /**
  * Created by 1 on 10/10/2015.
