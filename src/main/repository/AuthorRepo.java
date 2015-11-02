@@ -4,6 +4,8 @@ import main.data.repository.AbstractRepo;
 import main.domain.Author;
 import main.domain.AuthorValidator;
 
+import java.util.HashMap;
+
 /**
  * Created by 1 on 10/9/2015.
  */
@@ -15,5 +17,25 @@ public class AuthorRepo extends AbstractRepo<Author> {
 
     public void setEntityId(Author author){
         author.setId(lastId);
+    }
+
+    protected Author getObject(HashMap<String, String> objectProperties){
+
+        //get the name of the author
+        String name = objectProperties.get("name");
+
+        //and his age, convert it to string
+        String ageString = objectProperties.get("age");
+        int age = Integer.parseInt(ageString);
+
+        Author author = new Author(name, age);
+
+        //and finally set its id
+        String idString = objectProperties.get("id");
+        int id = Integer.parseInt(idString);
+
+        author.setId(id);
+
+        return author;
     }
 }

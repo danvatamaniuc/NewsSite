@@ -1,22 +1,20 @@
 package main.data.repository;
 
+import com.thoughtworks.xstream.core.util.Fields;
 import main.data.domain.Validator;
+import main.data.exceptions.RepositoryException;
 import main.utils.Constants;
 
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.*;
 import javax.xml.stream.events.*;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.io.*;
+import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by 1 on 10/20/2015.
@@ -27,15 +25,23 @@ public abstract class AbstractRepo<E> implements CRUDRepository<E> {
     private List<E> entities = new ArrayList<E>();
     private Validator<E> validator;
     private String storageFile;
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private HashMap<String, String> objectProperties;
 
     public AbstractRepo() {
+
+        //start the id counter
         this.lastId = 0;
 
-        storageFile = getNameForGenericE() + "Storage.xml";
-//        storageFile = "resources/files/test.xml";
+        storageFile = "../../../resources/files/";
+        storageFile = storageFile + getNameForGenericE() + "Storage.xml";
+
+        objectProperties = new HashMap<>();
     }
 
-    public abstract void setEntityId(E e) ;
+    public void setXMLFilename(String filename){
+        storageFile = "../../../resources/files/" + filename;
+    }
 
     public void save(E e){
         validator.validate(e);
@@ -161,10 +167,109 @@ public abstract class AbstractRepo<E> implements CRUDRepository<E> {
 
 
         } catch (Exception e){
-            e.printStackTrace();
+//            e.printStackTrace();
+
+            //logs the exception message to the console
+            LOGGER.log(Level.SEVERE, e.getMessage());
         }
+    }
 
+    public void loadAllFromXML(){
 
+        //CAUTION! empties all elements in the entities hasharray
+        //and replaces them with objects from the file
+
+        try{
+            //set up classes needed to read from an xml file
+
+            //create an input factory for the stream reader
+            XMLInputFactory inputFactory = XMLInputFactory.newFactory();
+
+            //create an input stream, where we specify the name of the source file
+            final InputStream fileInputStream = new FileInputStream(storageFile);
+
+            //check if the file exists
+            if (fileInputStream == null) throw new RepositoryException("File doesn't exist!");
+
+            //create the stream reader, that will read from the file
+            //uses the input factory created above
+            XMLStreamReader reader = inputFactory.createXMLStreamReader(fileInputStream);
+
+            //get the name of the class via reflection
+            String className = getNameForGenericE();
+
+            //variable to store the name of the tags read
+            String elementName = null;
+
+            //variable to store field name
+            String fieldName;
+            String fieldValue;
+
+            //get all the fields of the class via reflection
+            Field[] fields = (Class.forName(getTypeForGenericE().getTypeName())).getDeclaredFields();
+            Method[] methods = (Class.forName(getTypeForGenericE().getTypeName())).getMethods();
+
+            //read the file while you can
+            while (reader.hasNext()){
+                //get next element
+                reader.next();
+
+                //get the event type of the thing read
+                int eventType = reader.getEventType();
+
+                switch (eventType){
+                    case XMLStreamReader.START_ELEMENT:
+
+                        elementName = reader.getLocalName();
+
+                        for (Field field : fields){
+                            fieldName = field.getName();
+
+                            //if we identify what field we are reading, we need to
+                            //insert the useful info in the element
+                            if (elementName.equals(fieldName)) {
+
+                                //actually tried here invoking the method on an object
+                                //created earlier, but can't really keep track
+                                //of the type of the argument that needs to be sent
+
+                                //for example, ids are numbers, names are strings,
+                                //for ids there is need to convert to int
+                                //for names there is not
+
+                                //so let the inherent repos deal with creating objects
+                                //by providing a hashmap with all the field names and their
+                                //respective values, repos will return the object created
+
+                                fieldValue = reader.getElementText();
+
+                                //store the field name and values for the inherent repo
+                                //to generate the object
+                                objectProperties.put(fieldName, fieldValue);
+
+                            }
+                        }
+                        break;
+
+                    case XMLStreamReader.END_ELEMENT:
+
+                        elementName = reader.getLocalName();
+
+                        if (elementName.equals(className)){
+                            entities.add(getObject(objectProperties));
+                            objectProperties.clear();
+                        }
+                        break;
+                }
+            }
+
+            fileInputStream.close();
+            reader.close();
+
+        } catch (Exception e){
+            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e.getMessage());
+        }
     }
 
     private void createNode(XMLEventWriter eventWriter, String name,
@@ -193,6 +298,11 @@ public abstract class AbstractRepo<E> implements CRUDRepository<E> {
     public void setValidator(Validator<E> validator) {
         this.validator = validator;
     }
+
+//    abstract methods to be implemented
+    public abstract void setEntityId(E e) ;
+
+    protected abstract E getObject(HashMap<String, String> objectProperties);
 
 //    private methods responsible for finding out the class name of the object in use
 //    used heavily in xml I/Os

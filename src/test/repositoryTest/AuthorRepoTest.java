@@ -40,11 +40,21 @@ public class AuthorRepoTest extends TestCase {
         catch (Exception e){
             assertEquals(true, true);
         }
-
-//        repo.saveAllToXml();
-
         assertNotNull(allAuthors.get(0));
 //        assertEquals(allAuthors.get(0).getAge(), author.getAge());
 //        assertEquals(allAuthors.get(0).getName(), author.getName());
+    }
+
+    public void testXMLIO() throws Exception {
+        repo.save(author);
+        repo.save(author);
+
+        repo.setXMLFilename("test.xml");
+        repo.saveAllToXml();
+
+        AuthorRepo newRepo = new AuthorRepo();
+        newRepo.setXMLFilename("test.xml");
+        newRepo.loadAllFromXML();
+
     }
 }
