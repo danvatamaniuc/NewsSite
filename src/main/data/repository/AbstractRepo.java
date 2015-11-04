@@ -1,5 +1,6 @@
 package main.data.repository;
 
+import com.sun.corba.se.spi.legacy.connection.LegacyServerSocketEndPointInfo;
 import com.thoughtworks.xstream.core.util.Fields;
 import main.data.domain.Validator;
 import main.data.exceptions.RepositoryException;
@@ -9,6 +10,7 @@ import javax.xml.stream.*;
 import javax.xml.stream.events.*;
 import java.io.*;
 import java.lang.reflect.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +23,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractRepo<E> implements CRUDRepository<E> {
 
+    private File sourceFile;
     protected int lastId;
     private List<E> entities = new ArrayList<E>();
     private Validator<E> validator;
@@ -28,19 +31,38 @@ public abstract class AbstractRepo<E> implements CRUDRepository<E> {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     private HashMap<String, String> objectProperties;
 
-    public AbstractRepo() {
+    public AbstractRepo(){
 
         //start the id counter
         this.lastId = 0;
 
-        storageFile = "../../../resources/files/";
+        storageFile = Constants.RESOURCES_FILES_PATH;
         storageFile = storageFile + getNameForGenericE() + "Storage.xml";
+
+//        try {
+//            URL urlFile = getClass().getClassLoader().getResource(storageFile);
+//            sourceFile = new File(urlFile.toURI());
+//        } catch (Exception e){
+//            LOGGER.log(Level.SEVERE, e.getMessage());
+//        }
 
         objectProperties = new HashMap<>();
     }
 
     public void setXMLFilename(String filename){
-        storageFile = "../../../resources/files/" + filename;
+
+        storageFile = Constants.RESOURCES_FILES_PATH + filename;
+
+        //attempt to use resources to load files
+        //failed miserably
+
+//        try {
+//            URL urlFile = getClass().getClassLoader().getResource(storageFile);
+//            sourceFile = new File(urlFile.toURI());
+//        } catch (Exception e){
+//            LOGGER.log(Level.SEVERE, e.getMessage());
+//        }
+
     }
 
     public void save(E e){
@@ -179,6 +201,8 @@ public abstract class AbstractRepo<E> implements CRUDRepository<E> {
         //CAUTION! empties all elements in the entities hasharray
         //and replaces them with objects from the file
 
+        entities.clear();
+
         try{
             //set up classes needed to read from an xml file
 
@@ -207,7 +231,7 @@ public abstract class AbstractRepo<E> implements CRUDRepository<E> {
 
             //get all the fields of the class via reflection
             Field[] fields = (Class.forName(getTypeForGenericE().getTypeName())).getDeclaredFields();
-            Method[] methods = (Class.forName(getTypeForGenericE().getTypeName())).getMethods();
+            //Method[] methods = (Class.forName(getTypeForGenericE().getTypeName())).getMethods();
 
             //read the file while you can
             while (reader.hasNext()){
@@ -282,6 +306,7 @@ public abstract class AbstractRepo<E> implements CRUDRepository<E> {
 
         // create Start node
         StartElement sElement = eventFactory.createStartElement("", "", name);
+        eventWriter.add(tab);
         eventWriter.add(tab);
         eventWriter.add(sElement);
 

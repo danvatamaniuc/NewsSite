@@ -30,7 +30,7 @@ public class Manager {
         authorRepo.save(author);
     }
 
-    public void save(User user){
+    public void save(User user) {
         userRepo.save(user);
     }
 
