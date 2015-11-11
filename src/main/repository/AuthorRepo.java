@@ -1,8 +1,7 @@
 package main.repository;
 
-import main.data.repository.AbstractRepo;
+import data.repository.AbstractRepo;
 import main.domain.Author;
-import main.domain.AuthorValidator;
 
 import java.util.HashMap;
 

@@ -2,7 +2,7 @@ package test.repositoryTest;
 
 import junit.framework.TestCase;
 import main.domain.Author;
-import main.domain.AuthorValidator;
+import main.domain.validator.AuthorValidator;
 import main.repository.AuthorRepo;
 
 import java.util.ArrayList;

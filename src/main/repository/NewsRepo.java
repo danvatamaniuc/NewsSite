@@ -1,10 +1,8 @@
 package main.repository;
 
-import main.data.repository.AbstractRepo;
+import data.repository.AbstractRepo;
 import main.domain.News;
-import main.domain.NewsValidator;
 
-import javax.xml.bind.ValidationException;
 import java.util.HashMap;
 
 /**

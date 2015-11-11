@@ -1,9 +1,7 @@
 import main.UI.ConsoleUI;
-import main.data.domain.Validator;
-import main.domain.Author;
-import main.domain.AuthorValidator;
-import main.domain.NewsValidator;
-import main.domain.UserValidator;
+import main.domain.validator.AuthorValidator;
+import main.domain.validator.NewsValidator;
+import main.domain.validator.UserValidator;
 import main.manager.Manager;
 import main.repository.AuthorRepo;
 import main.repository.NewsRepo;
@@ -30,5 +28,7 @@ public class Main {
         //commons logging
 
         console.run();
+
+        manager.shutdown();
     }
 }

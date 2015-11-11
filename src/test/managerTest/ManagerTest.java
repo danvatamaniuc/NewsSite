@@ -1,14 +1,17 @@
 package test.managerTest;
 
+import data.transfer.Paginator;
 import junit.framework.TestCase;
-import main.data.domain.Validator;
 import main.domain.*;
+import main.domain.dto.NewsDto;
+import main.domain.validator.AuthorValidator;
+import main.domain.validator.NewsValidator;
+import main.domain.validator.UserValidator;
 import main.manager.Manager;
 import main.repository.AuthorRepo;
 import main.repository.NewsRepo;
 import main.repository.UserRepo;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -66,5 +69,25 @@ public class ManagerTest extends TestCase {
         ArrayList<User> allUsers = (ArrayList) userRepo.getAll();
 
         assertEquals(allUsers.get(0).getUsername(), user.getUsername());
+    }
+
+    public void testGetNewsPages() throws Exception {
+        newsRepo.save(news);
+        newsRepo.save(news);
+        newsRepo.save(news);
+
+        newsRepo.setXMLFilename("testNewsRepo.xml");
+
+        newsRepo.saveAllToXml();
+
+        Paginator<NewsDto> paginator = manager.getNewsPages();
+
+        assertFalse(paginator.canPageBackwards());
+        assertTrue(paginator.canPageForward());
+
+        paginator.setPageSize(2);
+
+        assertFalse(paginator.canPageBackwards());
+        assertTrue(paginator.canPageForward());
     }
 }

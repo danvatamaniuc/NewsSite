@@ -2,7 +2,7 @@ package test.repositoryTest;
 
 import junit.framework.TestCase;
 import main.domain.News;
-import main.domain.NewsValidator;
+import main.domain.validator.NewsValidator;
 import main.repository.NewsRepo;
 
 import java.util.ArrayList;
